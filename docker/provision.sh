@@ -83,13 +83,6 @@ prepare_install () {
 }
 
 install_deps () {
-    # Get more recent node install
-    echo deb http://nginx.org/packages/ubuntu/ trusty nginx > /etc/apt/sources.list.d/nginx.list
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABF5BD827BD9BF62
-    wget -O - https://deb.nodesource.com/setup_8.x | bash -
-    # Install system dependencies for Qt, Python packages, etc.
-    # ppa:pi-rho/security is a repo for libre2-dev
-    add-apt-repository -y ppa:pi-rho/security && \
     apt-get update -q && \
     apt-get install -y --no-install-recommends \
         python3 \
@@ -97,7 +90,7 @@ install_deps () {
         python3-pip \
         build-essential \
         libre2-dev \
-        liblua5.2-dev \
+        liblua5.4-dev \
         libsqlite3-dev \
         zlib1g \
         zlib1g-dev \
@@ -106,10 +99,9 @@ install_deps () {
         pkg-config \
         nodejs \
         libmysqlclient-dev \
-        python-mysql.connector \
-        python-numpy \
-        python-openssl \
-        python-pip \
+        python3-mysql.connector \
+        python3-numpy \
+        python3-openssl \
         nginx
 }
 
@@ -122,7 +114,7 @@ install_qtwebkit_deps () {
         mesa-common-dev \
         libfontconfig1-dev \
         libicu-dev \
-        libpng12-dev \
+        libpng-dev \
         libxslt1-dev \
         libxml2-dev \
         libhyphen-dev \
@@ -144,103 +136,97 @@ install_qtwebkit_deps () {
         rsync
 }
 
-_ensure_folders () {
-    mkdir -p /downloads && \
-    mkdir -p /builds && \
-    chmod a+rw /downloads && \
-    chmod a+rw /builds
-}
-
-download_official_qt() {
-    _ensure_folders && \
-    curl -L -o /downloads/qt-installer.run \
-               $QT_MIRROR
-}
-
 install_official_qt () {
     # XXX: if qt version is changed, Dockerfile should be updated,
     # as well as qt-installer-noninteractive.qs script.
-    chmod +x /downloads/qt-installer.run && \
-    xvfb-run /downloads/qt-installer.run \
-        --script /app/script.qs \
-        | egrep -v '\[[0-9]+\] Warning: (Unsupported screen format)|((QPainter|QWidget))' && \
-    ls /opt/qt59/ && \
-#    cat /opt/qt59/InstallationLog.txt && \
-    cat /opt/qt59/components.xml
+    # chmod +x /downloads/qt-installer.run && \
+    # xvfb-run /downloads/qt-installer.run \
+    #    --script /app/script.qs \
+    #    | egrep -v '\[[0-9]+\] Warning: (Unsupported screen format)|((QPainter|QWidget))' && \
+    # ls /opt/qt59/ && \
+    #    cat /opt/qt59/InstallationLog.txt && \
+    # cat /opt/qt59/components.xml
+
+    apt install -y qtcreator qtbase5-dev qt5-qmake cmake
 }
 
 
 install_qtwebkit () {
     # Install webkit from https://github.com/annulen/webkit
-    _ensure_folders && \
-    curl -L -o /downloads/qtwebkit.tar.xz https://github.com/annulen/webkit/releases/download/qtwebkit-5.212.0-alpha2/qtwebkit-5.212.0_alpha2-qt59-linux-x64.tar.xz && \
-    pushd /builds && \
-    tar xvfJ /downloads/qtwebkit.tar.xz --keep-newer-files && \
-    rsync -aP /builds/qtwebkit-5.212.0_alpha2-qt59-linux-x64/* `qmake -query QT_INSTALL_PREFIX`
+    # _ensure_folders && \
+    # curl -L -o /downloads/qtwebkit.tar.xz https://github.com/annulen/webkit/releases/download/qtwebkit-5.212.0-alpha2/qtwebkit-5.212.0_alpha2-qt59-linux-x64.tar.xz && \
+    # pushd /builds && \
+    # tar xvfJ /downloads/qtwebkit.tar.xz --keep-newer-files && \
+    # rsync -aP /builds/qtwebkit-5.212.0_alpha2-qt59-linux-x64/* `qmake -query QT_INSTALL_PREFIX`
+
+    apt install libqt5webkit5-dev
 }
 
 
 install_pyqt5 () {
-    _ensure_folders && \
-    _activate_venv && \
-    ${_PYTHON} --version && \
-    curl -L -o /downloads/sip.tar.gz https://sourceforge.net/projects/pyqt/files/sip/sip-${SPLASH_SIP_VERSION}/sip-${SPLASH_SIP_VERSION}.tar.gz && \
-    curl -L -o /downloads/pyqt5.tar.gz https://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-${SPLASH_PYQT_VERSION}/PyQt5_gpl-${SPLASH_PYQT_VERSION}.tar.gz && \
+    # _ensure_folders && \
+    # _activate_venv && \
+    # ${_PYTHON} --version && \
+    # curl -L -o /downloads/sip.tar.gz https://sourceforge.net/projects/pyqt/files/sip/sip-${SPLASH_SIP_VERSION}/sip-${SPLASH_SIP_VERSION}.tar.gz && \
+    # curl -L -o /downloads/pyqt5.tar.gz https://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-${SPLASH_PYQT_VERSION}/PyQt5_gpl-${SPLASH_PYQT_VERSION}.tar.gz && \
 #    curl -L -o /downloads/sip.tar.gz https://www.riverbankcomputing.com/static/Downloads/sip/sip-${SPLASH_SIP_VERSION}.tar.gz && \
 #    curl -L -o /downloads/pyqt5.tar.gz https://www.riverbankcomputing.com/static/Downloads/PyQt5/PyQt5_gpl-${SPLASH_PYQT_VERSION}.tar.gz && \
-    ls -lh /downloads && \
+    # ls -lh /downloads && \
     # TODO: check downloads
-    pushd /builds && \
+    # pushd /builds && \
     # SIP
-    tar xzf /downloads/sip.tar.gz --keep-newer-files  && \
-    pushd sip-${SPLASH_SIP_VERSION}  && \
-    ${_PYTHON} configure.py  && \
-    make -j ${SPLASH_BUILD_PARALLEL_JOBS} && \
-    make install  && \
-    popd  && \
+    # tar xzf /downloads/sip.tar.gz --keep-newer-files  && \
+    # pushd sip-${SPLASH_SIP_VERSION}  && \
+    # ${_PYTHON} configure.py  && \
+    # make -j ${SPLASH_BUILD_PARALLEL_JOBS} && \
+    # make install  && \
+    # popd  && \
     # PyQt5
-    tar xzf /downloads/pyqt5.tar.gz --keep-newer-files  && \
-    pushd PyQt5_gpl-${SPLASH_PYQT_VERSION}  && \
+    # tar xzf /downloads/pyqt5.tar.gz --keep-newer-files  && \
+    # pushd PyQt5_gpl-${SPLASH_PYQT_VERSION}  && \
 #        --qmake "${SPLASH_QT_PATH}/bin/qmake" \
-    ${_PYTHON} configure.py -c \
-        --verbose \
-        --confirm-license \
-        --no-designer-plugin \
-        --no-qml-plugin \
-        --no-python-dbus \
-        -e QtCore \
-        -e QtGui \
-        -e QtWidgets \
-        -e QtNetwork \
-        -e QtWebKit \
-        -e QtWebKitWidgets \
-        -e QtSvg \
-        -e QtPrintSupport && \
-    make -j ${SPLASH_BUILD_PARALLEL_JOBS} && \
-    make install && \
-    popd  && \
+    # ${_PYTHON} configure.py -c \
+    #    --verbose \
+    #    --confirm-license \
+    #    --no-designer-plugin \
+    #    --no-qml-plugin \
+    #    --no-python-dbus \
+    #    -e QtCore \
+    #    -e QtGui \
+    #    -e QtWidgets \
+    #    -e QtNetwork \
+    #    -e QtWebKit \
+    #    -e QtWebKitWidgets \
+    #    -e QtSvg \
+    #    -e QtPrintSupport && \
+    # make -j ${SPLASH_BUILD_PARALLEL_JOBS} && \
+    # make install && \
+    # popd  && \
     # Builds Complete
-    popd
+    # popd
+
+    apt install python3-pyqt5.qtsvg python3-pyqt5.qtwebkit
 }
 
 
 install_python_deps(){
     # Install python-level dependencies.
-    _activate_venv && \
-    ${_PYTHON} -m pip install -U pip setuptools six && \
-    ${_PYTHON} -m pip install \
-        qt5reactor==0.4 \
-        psutil==5.0.0 \
-        Twisted==16.1.1 \
-        adblockparser==0.7 \
-        xvfbwrapper==0.2.9 \
-        funcparserlib==0.3.6 \
-        Pillow==3.4.2 \
-        lupa==1.3 && \
-    ${_PYTHON} -m pip install https://github.com/sunu/pyre2/archive/c610be52c3b5379b257d56fc0669d022fd70082a.zip#egg=re2
-    ${_PYTHON} -m pip install -r "$APP_ROOT/slybot/requirements.txt"
-    ${_PYTHON} -m pip install -r "$APP_ROOT/slyd/requirements.txt"
-    ${_PYTHON} -m pip install -r "$APP_ROOT/portia_server/requirements.txt"
+    # _activate_venv && \
+    pip install -U pip setuptools six && \
+    pip install \
+        qt5reactor \
+        psutil \
+        Twisted \
+        adblockparser \
+        xvfbwrapper \
+        funcparserlib \
+        Pillow \
+        lupa
+    pip install PyQt5-sip
+    pip install https://github.com/sunu/pyre2/archive/c610be52c3b5379b257d56fc0669d022fd70082a.zip#egg=re2
+    pip install -r "$APP_ROOT/slybot/requirements.txt"
+    pip install -r "$APP_ROOT/slyd/requirements.txt"
+    pip install -r "$APP_ROOT/portia_server/requirements.txt"
 }
 
 
@@ -265,20 +251,12 @@ install_extra_fonts() {
         fonts-beng
 }
 
-install_flash () {
-    apt-add-repository -y "deb http://archive.ubuntu.com/ubuntu trusty multiverse" && \
-    apt-get update && \
-    apt-get install -y flashplugin-installer
-}
 
 remove_builddeps () {
     # WARNING: only for Docker, don't run blindly!
     # Uninstall build dependencies.
     apt-get remove -y --purge \
         python3-dev \
-        libpython3.5-dev \
-        libpython3.5 \
-        libpython3.5-dev \
         build-essential \
         libre2-dev \
         liblua5.2-dev \
@@ -286,7 +264,7 @@ remove_builddeps () {
         libc-dev \
         libjpeg-turbo8-dev \
         libcurl3 \
-        gcc cpp cpp-5 binutils perl rsync && \
+        gcc cpp cpp binutils perl rsync && \
     apt-get clean -y
 }
 
@@ -308,7 +286,7 @@ remove_extra () {
 
 install_splash(){
     cd /tmp
-    curl -L -o splash.tar.gz 'https://github.com/scrapinghub/splash/archive/3.2.x.tar.gz'
+    curl -L -o splash.tar.gz 'https://github.com/scrapinghub/splash/archive/refs/tags/3.5.0.tar.gz'
     tar -xvf splash.tar.gz --keep-newer-files
     cd splash-*
     _activate_venv
