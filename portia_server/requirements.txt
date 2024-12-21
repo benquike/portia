@@ -11,6 +11,5 @@ mysqlclient
 requests>=2.20.0
 toposort
 whitenoise
-portia2code
 shub
 scrapy-utils

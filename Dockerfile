@@ -124,6 +124,9 @@ COPY docker/qt_install.qs /app/script.qs
 COPY docker/provision.sh /app/provision.sh
 
 RUN pip install git+https://github.com/benquike/scrapely
+RUN pip install git+https://github.com/benquike/scrapy-splash.git
+
+RUN pip install git+https://github.com/benquike/portia2code
 
 COPY slybot/requirements.txt /app/slybot/requirements.txt
 COPY slyd/requirements.txt /app/slyd/requirements.txt
