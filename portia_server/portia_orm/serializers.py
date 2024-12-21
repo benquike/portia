@@ -12,7 +12,7 @@ __all__ = [
 
 
 class FileSerializerOpts(schema.SchemaOpts):
-    def __init__(self, meta):
+    def __init__(self, meta, ordered):
         super(FileSerializerOpts, self).__init__(meta)
         if meta is schema.BaseSchema.Meta:
             return

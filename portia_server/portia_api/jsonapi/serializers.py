@@ -109,7 +109,7 @@ class JsonApiSerializerMeta(SchemaMeta):
 
 
 class JsonApiSerializerOpts(SchemaOpts):
-    def __init__(self, meta):
+    def __init__(self, meta, ordered):
         super(JsonApiSerializerOpts, self).__init__(meta)
         if meta is BaseSchema.Meta:
             return
