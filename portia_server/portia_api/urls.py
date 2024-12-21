@@ -1,4 +1,5 @@
-from django.conf.urls import url, include
+from django.conf.urls import include
+from django.urls import path as url
 
 from .routers import Router, NestedRouter
 from .resources.annotations import AnnotationRoute
