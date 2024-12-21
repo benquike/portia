@@ -1,6 +1,6 @@
 import json
 
-from collections import Sequence
+from collections.abc import Sequence
 
 from .exceptions import ImproperlyConfigured, ValidationError
 from .snapshots import ModelSnapshots

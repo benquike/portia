@@ -1,4 +1,5 @@
-from collections import OrderedDict, Sequence
+from collections import OrderedDict
+from collections.abc import Sequence
 
 from marshmallow import schema
 from six import iteritems, string_types

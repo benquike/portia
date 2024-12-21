@@ -1,4 +1,4 @@
-from collections import Mapping
+from collections.abc import Mapping
 
 from marshmallow import fields, utils
 from six import string_types
