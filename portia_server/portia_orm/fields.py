@@ -91,7 +91,7 @@ class Field(fields.Field):
         return super(Field, self).serialize(attr, obj, accessor)
 
 
-class ValidatedField(fields.ValidatedField, Field):
+class ValidatedField(Field):
     default_error_messages = {
         'invalid': u"Invalid value.",
     }
@@ -114,7 +114,7 @@ class ValidatedField(fields.ValidatedField, Field):
     validator = Validator
 
     def __init__(self, *args, **kwargs):
-        super(ValidatedField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.validators.insert(0, self.validator())
 
     def _validated(self, value):
