@@ -1,7 +1,7 @@
 import logging
 
-from twisted.internet import defer
-from twisted.web.client import getPage
+from twisted.internet import reactor, defer
+from twisted.web.client import Agent
 
 from scrapy import Request
 from scrapy.http import HtmlResponse
@@ -23,7 +23,19 @@ class FetchError(Exception):
     def __str__(self):
         return '\n'.join(e.getErrorMessage() for e in self.errors)
 
+def getPage(url):
+    agent = Agent(reactor)
+    d = agent.request('GET', url)
 
+    @defer.inlineCallbacks
+    def handle_response(response):
+        body = yield response.content.read()
+        print(body) 
+        reactor.stop()
+
+    d.addCallback(handle_response)
+    reactor.run()
+    
 def get_page(times, url):
     errors = []
     deferred = defer.Deferred()
