@@ -1,7 +1,7 @@
 import hashlib
 from collections import defaultdict, namedtuple
 
-from scrapy.item import DictItem, Field, Item
+from scrapy.item import Field, Item
 from scrapely.descriptor import ItemDescriptor, FieldDescriptor
 
 from slybot.fieldtypes import FieldTypeManager
@@ -9,7 +9,7 @@ FieldProcessor = namedtuple('FieldProcessor', ['name', 'description',
                                                'extract', 'adapt'])
 
 
-class SlybotItem(DictItem):
+class SlybotItem(Item):
     # like DictItem.__setitem__ but doesn't check the field is declared
     def __setitem__(self, name, value):
         self._values[name] = value
